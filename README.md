@@ -6,7 +6,7 @@
 
 <div align="center">
 
-# go-autoGUI
+# goAutoGui
 
 _✨ Golang 原生实现 write by shaoze 少泽 ✨_
 
