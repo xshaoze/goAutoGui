@@ -34,16 +34,25 @@ _✨ Golang 原生实现 write by shaoze 少泽 ✨_
 
 ## 开始
 
-安装
-```
-go install xxxxx
-```
-示例：
-```
-package main
+<font color=#F612E8>先</font><font color=#ED24D1>别</font><font color=#E436BA>开</font><font color=#DB48A3>始</font><font color=#D25A8C>，</font><font color=#C96C75>还</font><font color=#C07E5E>没</font><font color=#B79047>写</font><font color=#AEA230>完</font><font color=#A5B419>呢</font><font color=#9CC602>！</font>
 
+[//]: # (安装)
 
-```
+[//]: # (```)
+
+[//]: # (go install xxxxx)
+
+[//]: # (```)
+
+[//]: # (示例：)
+
+[//]: # (```)
+
+[//]: # (package main)
+
+[//]: # ()
+[//]: # ()
+[//]: # (```)
 
 ## 文档
 
