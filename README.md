@@ -1,10 +1,10 @@
-<p style="text-align: center">
+<p align="center">
   <a href="#">
     <img src="assets/icon.png" width="200" height="200" alt="go-autoGUI">
   </a>
 </p>
 
-<div style="text-align: center">
+<div align="center">
 
 # go-autoGUI
 
