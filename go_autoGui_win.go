@@ -1,41 +1,29 @@
 //go:build windows
 
-package go_autoGUI
+package goAutoGUI
 
 import (
-	"goAutoGui/internal/appError"
-	"os/exec"
-	"strings"
 	"syscall"
+	"time"
 	"unsafe"
 )
 
 // SystemLang 系统语言类型 zh,en
 var SystemLang string
 
-var User32DLL = syscall.MustLoadDLL(`User32.dll`)
+var user32DLL = syscall.MustLoadDLL(`User32.dll`)
 
 func init() {
-	// 获取语言
-	cmd := exec.Command("powershell", "Get-Culture | select -exp Name")
-	output, err := cmd.Output()
-	if err == nil {
-		if lang := strings.TrimSpace(string(output)); lang == "zh-CN" {
-			SystemLang = "zh"
-		} else {
-			SystemLang = "en"
-		}
-	}
 	defer func(user32DLL *syscall.DLL) {
 		err := user32DLL.Release()
 		if err != nil {
 		}
-	}(User32DLL)
+	}(user32DLL)
 }
 
 // ScreenSize 获取屏幕大小
 func ScreenSize() (ScreenSizeStruct, error) {
-	getSystemMetricsProc := User32DLL.MustFindProc(`GetSystemMetrics`)
+	getSystemMetricsProc := user32DLL.MustFindProc(`GetSystemMetrics`)
 	width, _, _ := getSystemMetricsProc.Call(uintptr(0))
 	height, _, _ := getSystemMetricsProc.Call(uintptr(1))
 	return ScreenSizeStruct{
@@ -45,41 +33,106 @@ func ScreenSize() (ScreenSizeStruct, error) {
 }
 
 // GetCursorPos 获取鼠标当前位置
-func GetCursorPos() (POINT, error) {
-	getCursorPos := User32DLL.MustFindProc("GetCursorPos")
-	var pt POINT
-	ret, _, _ := getCursorPos.Call(uintptr(unsafe.Pointer(&pt)))
-	if ret == 0 {
-		return POINT{}, appError.Error("getCursorPosError", SystemLang)
+func GetCursorPos() (*POINT, error) {
+	// 安全地获取 API 函数指针
+	proc, err := user32DLL.FindProc("GetCursorPos")
+	if err != nil {
 	}
-	return pt, nil
+
+	var pt POINT
+	r1, _, err := proc.Call(uintptr(unsafe.Pointer(&pt)))
+
+	if r1 == 0 {
+	}
+
+	return &pt, nil
 }
 
-// MoveMouse 平滑移动鼠标,speed秒到达
-func MoveMouse(x, y int, speed float64) error {
-	//cursor := User32DLL.MustFindProc("SetCursorPos")
-	//
-	//pos, err := GetCursorPos()
-	//if err != nil {
-	//	return err
-	//}
+// MoveMouse 平滑移动鼠标,speed毫秒到达,每次移动间隔step毫秒
+func MoveMouse(x, y int32, speed, step int) error {
+	pos, err := GetCursorPos()
+	if err != nil {
+		return err
+	}
+	cursor := user32DLL.MustFindProc("SetCursorPos")
+	// 计算每一步的时间间隔（1 毫秒）
+	stepDuration := time.Millisecond * time.Duration(step)
+	// 计算总步数
+	totalSteps := int(float64(speed) / float64(stepDuration.Milliseconds()))
+	// 计算每一步的增量
+	dx := float64(x-pos.X) / float64(totalSteps)
+	dy := float64(y-pos.Y) / float64(totalSteps)
 
-	//pos.X, pos.Y
-	//pyX := x - pos.X
-	//pyY := y - pos.Y
-	//k := pyX / pyY
-	//b := y - k*x
-	//sep := pyX / int(speed*10)
-	//
-	//for i := 0; i < int(speed*10); i++ {
-	//	_, _, _ = cursor.Call(uintptr(sep*i), uintptr(k*sep*i+b))
-	//	time.Sleep(100 * time.Millisecond)
-	//}
+	currentX, currentY := float64(pos.X), float64(pos.Y)
 
+	for i := 0; i <= totalSteps; i++ {
+		_, _, _ = cursor.Call(uintptr(currentX), uintptr(currentY))
+		time.Sleep(stepDuration)
+		currentX += dx
+		currentY += dy
+	}
+	return nil
+}
+
+// MouseDown 鼠标{按下} left是true的时候左键，反之右键
+func MouseDown(left bool) error {
+	return nil
+}
+
+// MouseUp 鼠标{松开} left是true的时候左键，反之右键
+func MouseUp(left bool) error {
+	return nil
+}
+
+// MouseWheelDown 鼠标中建按下 左倾斜(<0) 中键(=0) 右倾斜(>0)
+func MouseWheelDown(left int) error {
+	return nil
+}
+
+// MouseWheelUp 鼠标中键松开 左倾斜(<0) 中键(=0) 右倾斜(>0)
+func MouseWheelUp(left int) error {
+	return nil
+}
+
+// MouseOtherDown 自定义鼠标键{按下}
+func MouseOtherDown() error {
+	return nil
+}
+
+// MouseOtherUp 自定义鼠标键{松开}
+func MouseOtherUp() error {
+	return nil
+}
+
+// MouseMiddleWheel 滚轮向上
+func MouseMiddleWheel(Upward bool) error {
 	return nil
 }
 
 // Click 点击某处
-func Click(x, y, times int, speed float64) {
+func Click(times uint) error {
+	return nil
+}
 
+func MoveAndClick(c ClickStruct) error {
+	// 默认值
+	if c.times == 0 {
+		c.times = 1
+	}
+	if c.step == 0 {
+		c.step = 10
+	}
+	if c.speed == 0 {
+		c.speed = 100
+	}
+
+	err := MoveMouse(c.x, c.y, c.speed, c.step)
+	if err != nil {
+		return err
+	}
+	err = Click(c.times)
+	if err != nil {
+		return err
+	}
+	return nil
 }
