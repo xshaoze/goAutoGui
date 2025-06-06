@@ -14,7 +14,7 @@ _✨ Golang 原生实现 write by shaoze 少泽 ✨_
 
 ## 🌟 项目介绍 🌟
 
-有些老程序不支持控件操控，但是目前(2025.06)没有看见有基于图像识别的自动化程序，可能以后有但是目前没有，所以项目启动这个项目
+有些老程序不支持控件操控，但是目前(2025.06)没有看见 GO 的基于图像识别的自动化程序，可能以后有但是目前没有，所以项目启动这个项目
 。
 
 虽然 [robotGo](https://pkg.go.dev/github.com/go-vgo/robotgo) 确实很强大,但是类似[PyAutoGUI](https://pypi.org/project/PyAutoGUI/) 机制的内容几乎没有
