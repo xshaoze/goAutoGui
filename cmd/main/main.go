@@ -1,7 +1,10 @@
 package main
 
-import goAutoGUI "goAutoGui"
+import "goAutoGui"
 
 func main() {
-	goAutoGUI.MoveMouse(100, 100, 100, 1)
+	goAutoGui.MoveAndClick(goAutoGui.ClickStruct{
+		X: 100,
+		Y: 100,
+	})
 }

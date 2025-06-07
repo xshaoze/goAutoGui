@@ -1,4 +1,4 @@
-package goAutoGUI
+package goAutoGui
 
 // ScreenSizeStruct 定义了屏幕大小的类
 type ScreenSizeStruct struct {
@@ -10,9 +10,11 @@ type POINT struct {
 	X int32
 	Y int32
 }
-
+type ClickTimes struct {
+	times uint
+}
 type ClickStruct struct {
-	x, y        int32
-	times       uint
-	speed, step int
+	Times       uint
+	times       ClickTimes
+	Speed, step int
 }
